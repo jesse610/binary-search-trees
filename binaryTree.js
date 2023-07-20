@@ -68,9 +68,13 @@ class Tree {
             return rootNode
         }
 
-        if (rootNode.left === null && rootNode.right != null || rootNode.left != null && rootNode.right === null && rootNode.data === value)
+        if (rootNode.left === null && rootNode.right !== null && rootNode.data === value)
         {
-            
+            return rootNode.right
+        }
+        else if(rootNode.left !== null && rootNode.right === null && rootNode.data === value)
+        {
+            return rootNode.left
         }
 
         if (rootNode.data > value)
@@ -110,5 +114,6 @@ let t1 = new Tree([1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324])
 console.log(t1.insert(2))
 console.log(t1.insert(6))
 console.log(t1.insert(36))
-t1.delete(36)
+console.log(prettyPrint(t1.root))
+t1.delete(1)
 console.log(prettyPrint(t1.root))
