@@ -60,41 +60,226 @@ class Tree {
         return rootNode
     } 
 
-    delete(value, rootNode = this.root)
+    delete(data, root = this.root)
     {
-        if (rootNode.left === null && rootNode.right === null && rootNode.data === value)
+        if (root === null)
         {
-            rootNode = null
-            return rootNode
+            return root
         }
 
-        if (rootNode.left === null && rootNode.right !== null && rootNode.data === value)
+        if (root.data > data)
         {
-            return rootNode.right
+            root.left = this.delete(data, root.left)
+            return root
         }
-        else if(rootNode.left !== null && rootNode.right === null && rootNode.data === value)
+        else if (root.data < data)
         {
-            return rootNode.left
+            root.right = this.delete(data, root.right)
+            return root
         }
 
-        if (rootNode.data > value)
+        if (root.left === null)
         {
-            rootNode.left = this.delete(value, rootNode.left)
+            let temp = root.right
+            root = null
+            return temp
+        }
+        else if (root.right === null)
+        {
+            let temp = root.left
+            root = null
+            return temp
         }
         else
         {
-            rootNode.right = this.delete(value, rootNode.right)
+            let succesorParent = root
+
+            let successor = root.right
+            while(successor.left !== null)
+            {
+                succesorParent = successor
+                successor = successor.left
+            }
+
+            if (succesorParent !== root)
+            {
+                succesorParent.left = successor.right
+            }
+            else
+            {
+                succesorParent.right = successor.right
+            }
+
+            root.data = successor.data
+
+            successor = null
+            return root
+        }
+    }
+
+    find(value, root = this.root) {
+        if (root === null)
+        {
+            return root
         }
 
-        return rootNode
+        if (root.data === value)
+        {
+            return root
+        }
+
+        if (root.data > value)
+        {
+            return this.find(value, root.left)
+        }
+        else
+        {
+            return this.find(value, root.right)
+        }
+    }
+
+    levelOrder(root = this.root, callback = null) {
+        if (root === null)
+        {
+            return root
+        }
+
+        let queue = [root]
+        let result = []
+
+        while (queue.length > 0)
+        {
+            let currentNode = queue.shift()
+            result.push(currentNode.data)
+
+            if(callback)
+            {
+                callback(currentNode)
+            }
+
+            if (currentNode.left)
+            {
+            queue.push(currentNode.left)
+            }
+
+            if (currentNode.right)
+            {
+            queue.push(currentNode.right)
+            }
+        }
+
+        return result
+    }
+
+    preOrder(root = this.root, resultArr = [], callback = null) {
+        if (root === null)
+        {
+            return null
+        }
+
+        if(callback)
+        {
+            callback(root)
+        }
+
+        resultArr.push(root.data)
+        this.preOrder(root.left, resultArr)
+        this.preOrder(root.right, resultArr)
+
+        return resultArr
+    }
+// 
+    inOrder(root = this.root, resultArr = [], callback = null) {
+        if (root === null)
+        {
+            return null
+        }
+
+        if (callback)
+        {
+            callback(root)
+        }
+
+        this.inOrder(root.left, resultArr)
+        resultArr.push(root.data)
+        this.inOrder(root.right, resultArr)
+
+        return resultArr
+    }
+
+    postOrder(root = this.root, resultArr = [], callback = null) {
+        if (root === null)
+        {
+            return null
+        }
+
+        if (callback)
+        {
+            callback(root)
+        }
+
+        this.postOrder(root.left, resultArr)
+        this.postOrder(root.right, resultArr)
+        resultArr.push(root.data)
+
+        return resultArr
+    }
+
+    height(node) {
+        if (node === null)
+        {
+            return -1
+        }
+
+        let leftHeight = this.height(node.left)
+        let rightHeight = this.height(node.right)
+
+        return Math.max(leftHeight, rightHeight) + 1
+    }
+
+    depth(node, root = this.root, depthCount = -1) {
+
+        if (root === null)
+        {
+            return -1
+        }
+
+        depthCount++
+
+        if (root.data === node)
+        {
+            return depthCount
+        }
+
+        if (root.data > node)
+        {
+            return this.depth(node, root.left, depthCount)
+        }
+        else if (root.data < node)
+        {
+            return this.depth(node, root.right, depthCount)
+        }
+    }
+
+    isbalanced(root = this.root) {
+        const heightLeftSubtree = this.height(root.left)
+        const heightRightSubtree = this.height(root.right)
+        const heightDifference = Math.abs(heightLeftSubtree - heightRightSubtree)
+
+        if (heightDifference > 1)
+        {
+            return false
+        }
+
+        return true
+    }
+
+    rebalance() {
+        let treeArr = this.inOrder(this.root)
+        this.root = this.buildTree(treeArr, 0, treeArr.length - 1)
     }
 }
 
-//    insert(2, rootNode (8))
-//      => rootNode(8).left = insert(2, rootNode(4))
-//          => rootNode(4).left = insert(2, rootNode(1)) 
-//              => rootNode(1).right = insert(2, rootNode(3)) 
-//                  => rootNode(3).left = insert(2, null)) => {data: 2, left: null, right: null}
 
 
 const prettyPrint = (node, prefix = "", isLeft = true) => {
@@ -110,10 +295,4 @@ const prettyPrint = (node, prefix = "", isLeft = true) => {
     }
 };
 
-let t1 = new Tree([1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324])
-console.log(t1.insert(2))
-console.log(t1.insert(6))
-console.log(t1.insert(36))
-console.log(prettyPrint(t1.root))
-t1.delete(1)
-console.log(prettyPrint(t1.root))
+export {Tree}
