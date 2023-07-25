@@ -31,7 +31,6 @@ class Tree {
         }
 
         let mid = Math.floor((start + end) / 2)
-        console.log(mid)
         let rootNode = new Node(arr[mid])
         
         rootNode.left = this.buildTree(arr, start, mid - 1)
@@ -295,4 +294,4 @@ const prettyPrint = (node, prefix = "", isLeft = true) => {
     }
 };
 
-export {Tree}
+export {Tree, prettyPrint}
